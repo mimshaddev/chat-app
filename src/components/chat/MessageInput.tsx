@@ -20,6 +20,26 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
     file: File;
     url: string;
   } | null>(null);
+  const documentAcceptTypes = [
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".txt",
+    ".csv",
+    ".rtf",
+    ".odt",
+    ".ods",
+    ".odp",
+    ".json",
+    ".xml",
+    ".md",
+    "application/*",
+    "text/*",
+  ].join(",");
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -80,6 +100,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
             {attachment.type === "image" && <Image className="h-4 w-4" />}
             {attachment.type === "video" && <Video className="h-4 w-4" />}
             {attachment.type === "pdf" && <FileText className="h-4 w-4" />}
+            {attachment.type === "file" && <FileText className="h-4 w-4" />}
             <span className="text-sm truncate max-w-[200px]">{attachment.file.name}</span>
           </div>
           <Button variant="ghost" size="icon" onClick={removeAttachment}>
@@ -112,7 +133,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
         <input
           ref={fileInputRef}
           type="file"
-          accept="*/*"
+          accept={documentAcceptTypes}
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
