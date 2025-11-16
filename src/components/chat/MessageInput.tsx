@@ -16,38 +16,44 @@ interface MessageInputProps {
 const MessageInput = ({ onSendMessage }: MessageInputProps) => {
   const [message, setMessage] = useState("");
   const [attachment, setAttachment] = useState<{
-    type: "image" | "video" | "pdf";
+    type: "image" | "video" | "pdf" | "file";
     file: File;
     url: string;
   } | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  const documentInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
-    if (message.trim() || attachment) {
-      const newMessage: Message = {
-        id: Date.now(),
-        type: attachment ? attachment.type : "text",
-        message: message.trim() || `Sent a ${attachment?.type}`,
-        sender: "agent@mail.com",
-        timestamp: new Date().toISOString(),
-        ...(attachment?.type === "image" && { image_url: attachment.url }),
-        ...(attachment?.type === "video" && { video_url: attachment.url }),
-        ...(attachment?.type === "pdf" && {
-          pdf_url: attachment.url,
-          file_name: attachment.file.name,
-          file_size: `${(attachment.file.size / 1024).toFixed(2)} KB`,
-        }),
-      };
-      
-      onSendMessage(newMessage);
-      setMessage("");
-      setAttachment(null);
-    }
+    if (!(message.trim() || attachment)) return;
+
+    const payload: Message = {
+      id: Date.now(),
+      type: attachment ? attachment.type : "text",
+      message: message.trim() || `Sent a ${attachment?.type}`,
+      sender: "agent@mail.com",
+      timestamp: new Date().toISOString(),
+      ...(attachment?.type === "image" && { image_url: attachment.url }),
+      ...(attachment?.type === "video" && { video_url: attachment.url }),
+      ...(attachment?.type === "pdf" && {
+        pdf_url: attachment.url,
+        file_name: attachment.file.name,
+        file_size: `${(attachment.file.size / 1024).toFixed(2)} KB`,
+      }),
+      ...(attachment?.type === "file" && {
+        file_url: attachment.url,
+        file_name: attachment.file.name,
+        file_size: `${(attachment.file.size / 1024).toFixed(2)} KB`,
+        mime_type: attachment.file.type,
+      }),
+    } as Message;
+
+    onSendMessage(payload);
+    setMessage("");
+    setAttachment(null);
   };
 
-  const handleFileSelect = (type: "image" | "video" | "pdf", file: File) => {
+  const handleFileSelect = (type: "image" | "video" | "pdf" | "file", file: File) => {
     const url = URL.createObjectURL(file);
     setAttachment({ type, file, url });
   };
@@ -104,13 +110,23 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
           }}
         />
         <input
-          ref={documentInputRef}
+          ref={fileInputRef}
           type="file"
-          accept=".pdf"
+          accept="*/*"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) handleFileSelect("pdf", file);
+            if (!file) return;
+            const mime = file.type;
+            if (mime.startsWith("image/")) {
+              handleFileSelect("image", file);
+            } else if (mime.startsWith("video/")) {
+              handleFileSelect("video", file);
+            } else if (mime === "application/pdf") {
+              handleFileSelect("pdf", file);
+            } else {
+              handleFileSelect("file", file);
+            }
           }}
         />
         
@@ -148,10 +164,10 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
                 variant="ghost"
                 size="sm"
                 className="w-full justify-start"
-                onClick={() => documentInputRef.current?.click()}
+                onClick={() => fileInputRef.current?.click()}
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Document
+                File
               </Button>
             </div>
           </PopoverContent>
@@ -168,6 +184,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
 
         <Button
           onClick={handleSend}
+          type="button"
           size="icon"
           className="flex-shrink-0"
           disabled={!message.trim() && !attachment}

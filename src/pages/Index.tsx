@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, File, Image as ImageIcon, ChevronDown, Bell, CheckCircle, ArrowLeft, HomeIcon, FileVideo, AudioLines, PanelRightOpen, X as CloseIcon } from "lucide-react";
+import { Search, File, Image as ImageIcon, ChevronDown, Bell, CheckCircle, ArrowLeft, AudioLines, PanelRightOpen, X as CloseIcon , FileVideo, FileVideo2 } from "lucide-react";
 import ChatHeader from "@/components/chat/ChatHeader";
 import MessageList from "@/components/chat/MessageList";
 import MessageInput from "@/components/chat/MessageInput";
@@ -24,6 +24,7 @@ interface Chat {
 const Index = () => {
   const [chatData, setChatData] = useState<ChatResponse | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const gradients = [
     "from-orange-400 to-orange-600",
@@ -42,6 +43,45 @@ const Index = () => {
     }
     const idx = Math.abs(hash) % gradients.length;
     return gradients[idx];
+  };
+
+  const storageKey = (roomId?: number) => `chat_messages_${roomId ?? "default"}`;
+
+  const persistMessages = (roomId: number | undefined, data: Message[]) => {
+    if (!roomId) return;
+    const serialized = JSON.stringify(data);
+    try {
+      sessionStorage.setItem(storageKey(roomId), serialized);
+    } catch (err) {
+      console.warn("Unable to persist messages to sessionStorage", err);
+    }
+    try {
+      document.cookie = `${storageKey(roomId)}=${encodeURIComponent(serialized)}; path=/;`;
+    } catch (err) {
+      console.warn("Unable to persist messages to cookie", err);
+    }
+  };
+
+  const loadMessages = (roomId: number | undefined, fallback: Message[]) => {
+    if (!roomId) return fallback;
+    const key = storageKey(roomId);
+    try {
+      const fromSession = sessionStorage.getItem(key);
+      if (fromSession) return JSON.parse(fromSession) as Message[];
+    } catch (err) {
+      console.warn("Failed parsing sessionStorage messages", err);
+    }
+    try {
+      const cookies = document.cookie.split(";").map((c) => c.trim());
+      const cookie = cookies.find((c) => c.startsWith(`${key}=`));
+      if (cookie) {
+        const [, value] = cookie.split("=");
+        if (value) return JSON.parse(decodeURIComponent(value)) as Message[];
+      }
+    } catch (err) {
+      console.warn("Failed parsing cookie messages", err);
+    }
+    return fallback;
   };
   
   const initialChats: Chat[] = (chatDataJson as ChatResponse).results.map((r, i) => ({
@@ -87,11 +127,17 @@ const Index = () => {
   useEffect(() => {
     const data = chatDataJson as ChatResponse;
     setChatData(data);
-    if (!selectedRoomId) return;
+    setIsInitialized(true);
+  }, []);
 
-    const roomData = data.results.find((r) => r.room.id === selectedRoomId);
-    setMessages(roomData?.comments || []);
-  }, [selectedRoomId]);
+  useEffect(() => {
+    if (!isInitialized || !chatData) return;
+    if (!selectedRoomId) return;
+    const roomData = chatData.results.find((r) => r.room.id === selectedRoomId);
+    const incoming = roomData?.comments || [];
+    const persisted = loadMessages(selectedRoomId, incoming);
+    setMessages(persisted);
+  }, [selectedRoomId, isInitialized, chatData]);
 
   const formatChatTimestamp = (timestamp?: string) =>
     new Date(timestamp ?? Date.now()).toLocaleTimeString("id-ID", {
@@ -100,7 +146,11 @@ const Index = () => {
     });
 
   const handleSendMessage = (message: Message) => {
-    setMessages((prev) => [...prev, message]);
+    setMessages((prev) => {
+      const next = [...prev, message];
+      persistMessages(selectedRoomId, next);
+      return next;
+    });
 
     if (!selectedChat) return;
 
@@ -334,7 +384,7 @@ const Index = () => {
                 </div>
               <div className="flex items-center">
                   <div className="w-2 h-8 bg-purple-500 rounded-full mr-3"></div>
-                  <FileVideo className="h-5 w-5 text-purple-500 mr-3" />
+                  <FileVideo2 className="h-5 w-5 text-purple-500 mr-3" />
                   <div>
                       <p className="font-semibold">Videos</p>
                       <p className="text-sm text-gray-500">{fileStats.videos} file{fileStats.videos === 1 ? "" : "s"}</p>

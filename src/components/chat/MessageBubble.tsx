@@ -127,6 +127,40 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
           </div>
         );
       
+      case "file":
+        return (
+          <div className="space-y-2">
+            {message.message && (
+              <div className="whitespace-pre-wrap break-words break-all mb-2">
+                {message.message}
+              </div>
+            )}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-accent/50 border border-border">
+              <div className="flex-shrink-0">
+                <FileText className={cn("h-8 w-8", isOwn ? "text-white" : "text-destructive")} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm truncate max-w-[200px]" title={message.file_name}>
+                  {truncateText(message.file_name)}
+                </p>
+                {message.file_size && (
+                  <p className="text-xs text-muted-foreground">
+                    {message.file_size}
+                  </p>
+                )}
+              </div>
+              <a
+                href={message.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 p-2 hover:bg-accent rounded-lg transition-colors"
+              >
+                <Download className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        );
+      
       case "audio":
         return (
           <div className="space-y-2">

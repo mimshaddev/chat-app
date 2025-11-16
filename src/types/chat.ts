@@ -58,7 +58,19 @@ export interface AudioMessage {
   timestamp?: string;
 }
 
-export type Message = TextMessage | ImageMessage | VideoMessage | PdfMessage | AudioMessage;
+export interface FileMessage {
+  id: number;
+  type: "file";
+  message: string;
+  file_url: string;
+  file_name: string;
+  file_size?: string;
+  sender: string;
+  timestamp?: string;
+  mime_type?: string;
+}
+
+export type Message = TextMessage | ImageMessage | VideoMessage | PdfMessage | AudioMessage | FileMessage;
 
 export interface ChatData {
   room: Room;
