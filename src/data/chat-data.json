@@ -1,0 +1,121 @@
+{
+  "results": [
+    {
+      "room": {
+        "name": "Product A",
+        "id": 12456,
+        "image_url": "https://picsum.photos/id/237/200/300",
+        "participant": [
+          {
+            "id": "admin@mail.com",
+            "name": "Admin",
+            "role": 0
+          },
+          {
+            "id": "agent@mail.com",
+            "name": "Agent A",
+            "role": 1
+          },
+          {
+            "id": "customer@mail.com",
+            "name": "King Customer",
+            "role": 2
+          }
+        ]
+      },
+      "comments": [
+        {
+          "id": 885512,
+          "type": "text",
+          "message": "Selamat malam",
+          "sender": "customer@mail.com",
+          "timestamp": "2024-03-15T19:30:00Z"
+        },
+        {
+          "id": 885513,
+          "type": "text",
+          "message": "Malam",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:30:15Z"
+        },
+        {
+          "id": 885514,
+          "type": "text",
+          "message": "Ada yang bisa saya bantu?",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:30:20Z"
+        },
+        {
+          "id": 885515,
+          "type": "text",
+          "message": "Saya ingin mengirimkan bukti pembayaran, karena diaplikasi selalu gagal",
+          "sender": "customer@mail.com",
+          "timestamp": "2024-03-15T19:30:45Z"
+        },
+        {
+          "id": 885516,
+          "type": "text",
+          "message": "Baik, silahkan kirimkan lampiran bukti pembayarannya",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:31:00Z"
+        },
+        {
+          "id": 885517,
+          "type": "image",
+          "message": "Ini bukti transfernya",
+          "image_url": "https://picsum.photos/id/1/400/600",
+          "sender": "customer@mail.com",
+          "timestamp": "2024-03-15T19:31:30Z"
+        },
+        {
+          "id": 885518,
+          "type": "text",
+          "message": "Terima kasih, saya cek dulu ya",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:32:00Z"
+        },
+        {
+          "id": 885519,
+          "type": "pdf",
+          "message": "Ini invoice pembeliannya juga",
+          "pdf_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+          "file_name": "invoice_12456.pdf",
+          "file_size": "245 KB",
+          "sender": "customer@mail.com",
+          "timestamp": "2024-03-15T19:32:30Z"
+        },
+        {
+          "id": 885520,
+          "type": "text",
+          "message": "Pembayaran sudah kami terima. Terima kasih!",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:35:00Z"
+        },
+        {
+          "id": 885521,
+          "type": "video",
+          "message": "Video tutorial cara menggunakan produk",
+          "video_url": "https://www.w3schools.com/html/mov_bbb.mp4",
+          "thumbnail_url": "https://picsum.photos/id/10/400/300",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:36:00Z"
+        },
+        {
+          "id": 885522,
+          "type": "audio",
+          "message": "Ini rekaman penjelasan singkatnya",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+          "sender": "agent@mail.com",
+          "timestamp": "2024-03-15T19:36:30Z"
+        },
+        {
+          "id": 885523,
+          "type": "text",
+          "message": "Wah mantap, terima kasih banyak!",
+          "sender": "customer@mail.com",
+          "timestamp": "2024-03-15T19:37:00Z"
+        }
+      ]
+    }
+  ]
+}
