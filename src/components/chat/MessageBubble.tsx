@@ -12,6 +12,11 @@ interface MessageBubbleProps {
 const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
   const roleColor = getRoleColor(participant.role);
   
+  const truncateText = (text: string, max = 28) => {
+    if (!text) return "";
+    return text.length > max ? `${text.slice(0, max)}...` : text;
+  };
+
   const formatTime = (timestamp?: string) => {
     if (!timestamp) return "";
     const date = new Date(timestamp);
@@ -36,7 +41,7 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
                   href={part}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-blue-400 hover:underline break-all"
                 >
                   {part}
                 </a>
@@ -46,7 +51,7 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
           });
         };
         return (
-          <div className="whitespace-pre-wrap break-words">
+          <div className="whitespace-pre-wrap break-words break-all">
             {renderTextWithLinks(message.message)}
           </div>
         );
@@ -56,7 +61,7 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
         return (
           <div className="space-y-2">
             {message.message && (
-              <div className="whitespace-pre-wrap break-words">
+              <div className="whitespace-pre-wrap break-words break-all">
                 {message.message}
               </div>
             )}
@@ -73,7 +78,7 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
         return (
           <div className="space-y-2">
             {message.message && (
-              <div className="whitespace-pre-wrap break-words">
+              <div className="whitespace-pre-wrap break-words break-all">
                 {message.message}
               </div>
             )}
@@ -92,17 +97,17 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
         return (
           <div className="space-y-2">
             {message.message && (
-              <div className="whitespace-pre-wrap break-words mb-2">
+              <div className="whitespace-pre-wrap break-words break-all mb-2">
                 {message.message}
               </div>
             )}
             <div className="flex items-center gap-3 p-3 rounded-lg bg-accent/50 border border-border">
               <div className="flex-shrink-0">
-                <FileText className="h-8 w-8 text-destructive" />
+                <FileText className={cn("h-8 w-8", isOwn ? "text-white" : "text-destructive")} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">
-                  {message.file_name}
+                <p className="font-medium text-sm truncate max-w-[200px]" title={message.file_name}>
+                  {truncateText(message.file_name)}
                 </p>
                 {message.file_size && (
                   <p className="text-xs text-muted-foreground">
@@ -175,7 +180,7 @@ const MessageBubble = ({ message, participant, isOwn }: MessageBubbleProps) => {
         
         <div
           className={cn(
-            "rounded-2xl px-4 py-2.5 text-sm shadow-sm  break-words",
+            "rounded-2xl px-4 py-2.5 text-sm shadow-sm break-words break-all",
             isOwn
               ? "bg-primary text-primary-foreground rounded-tr-sm"
               : "bg-chat-bubble-other text-foreground rounded-tl-sm"
